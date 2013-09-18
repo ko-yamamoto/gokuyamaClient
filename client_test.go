@@ -74,6 +74,23 @@ func TestGetKeysByTag(t *testing.T) {
 
 }
 
+func TestRemoveValueByKey(t *testing.T) {
+
+	ret, err := gc.RemoveValueByKey("aaa")
+	if err != nil {
+		t.Error(err)
+	}
+	if ret == false {
+		t.Errorf("RemoveValueByKey result %t, want %t", ret, true)
+	}
+
+	getret, _ := gc.GetValue("aaa")
+	if getret != "" {
+		t.Errorf("getValue result %s, want \"\"", getret)
+	}
+
+}
+
 func TestClose(t *testing.T) {
 
 	err := gc.Close()

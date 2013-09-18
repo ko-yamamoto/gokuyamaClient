@@ -5,6 +5,7 @@ package client
 import (
 	"bufio"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -115,5 +116,29 @@ func (gc *GokuyamaClient) GetKeysByTag(tag string) ([]string, error) {
 		return tags, err
 	} else {
 		return nil, nil
+	}
+}
+
+// remove key-value by a key from okuyama
+func (gc *GokuyamaClient) RemoveValueByKey(key string) (bool, error) {
+
+	fmt.Fprintf(gc.conn, fmt.Sprintf("5,%s,0\n", base64.StdEncoding.EncodeToString([]byte(key))))
+
+	ret, err := bufio.NewReader(gc.conn).ReadString('\n')
+
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	if ret == "" {
+		return false, errors.New("unknown error")
+	}
+
+	rets := strings.Split(ret, ",")
+
+	if rets[1] == "true" {
+		return true, err
+	} else {
+		return false, nil
 	}
 }
