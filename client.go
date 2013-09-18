@@ -37,6 +37,19 @@ func (gc *GokuyamaClient) SetValue(key string, value string) bool {
 
 }
 
+func (gc *GokuyamaClient) SetValueWithTag(key string, value string, tag string) bool {
+
+	fmt.Fprintf(gc.conn, fmt.Sprintf("1,%s,%s,0,%s\n", base64.StdEncoding.EncodeToString([]byte(key)), base64.StdEncoding.EncodeToString([]byte(tag)), base64.StdEncoding.EncodeToString([]byte(value))))
+	status, _ := bufio.NewReader(gc.conn).ReadString('\n')
+
+	if status != "1,true,OK" {
+		return true
+	} else {
+		return false
+	}
+
+}
+
 func (gc *GokuyamaClient) GetValue(key string) (string, error) {
 
 	fmt.Fprintf(gc.conn, fmt.Sprintf("2,%s\n", base64.StdEncoding.EncodeToString([]byte(key))))
