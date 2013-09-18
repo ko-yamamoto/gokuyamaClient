@@ -26,7 +26,10 @@ func (gc *GokuyamaClient) Close() error {
 
 func (gc *GokuyamaClient) SetValue(key string, value string) bool {
 
-	fmt.Fprintf(gc.conn, fmt.Sprintf("1,%s,(B),0,%s\n", base64.StdEncoding.EncodeToString([]byte(key)), base64.StdEncoding.EncodeToString([]byte(value))))
+	fmt.Fprintf(gc.conn, fmt.Sprintf("1,%s,(B),0,%s\n",
+		base64.StdEncoding.EncodeToString([]byte(key)),
+		base64.StdEncoding.EncodeToString([]byte(value))))
+
 	status, _ := bufio.NewReader(gc.conn).ReadString('\n')
 
 	if status != "1,true,OK" {
@@ -39,7 +42,11 @@ func (gc *GokuyamaClient) SetValue(key string, value string) bool {
 
 func (gc *GokuyamaClient) SetValueWithTag(key string, value string, tag string) bool {
 
-	fmt.Fprintf(gc.conn, fmt.Sprintf("1,%s,%s,0,%s\n", base64.StdEncoding.EncodeToString([]byte(key)), base64.StdEncoding.EncodeToString([]byte(tag)), base64.StdEncoding.EncodeToString([]byte(value))))
+	fmt.Fprintf(gc.conn, fmt.Sprintf("1,%s,%s,0,%s\n",
+		base64.StdEncoding.EncodeToString([]byte(key)),
+		base64.StdEncoding.EncodeToString([]byte(tag)),
+		base64.StdEncoding.EncodeToString([]byte(value))))
+
 	status, _ := bufio.NewReader(gc.conn).ReadString('\n')
 
 	if status != "1,true,OK" {
@@ -53,6 +60,7 @@ func (gc *GokuyamaClient) SetValueWithTag(key string, value string, tag string) 
 func (gc *GokuyamaClient) GetValue(key string) (string, error) {
 
 	fmt.Fprintf(gc.conn, fmt.Sprintf("2,%s\n", base64.StdEncoding.EncodeToString([]byte(key))))
+
 	ret, err := bufio.NewReader(gc.conn).ReadString('\n')
 
 	if ret == "" {
@@ -69,5 +77,34 @@ func (gc *GokuyamaClient) GetValue(key string) (string, error) {
 		return string(data), err
 	} else {
 		return "", nil
+	}
+}
+
+func (gc *GokuyamaClient) GetKeysByTag(tag string) ([]string, error) {
+
+	fmt.Fprintf(gc.conn, fmt.Sprintf("3,%s,True\n", base64.StdEncoding.EncodeToString([]byte(tag))))
+
+	ret, err := bufio.NewReader(gc.conn).ReadString('\n')
+	if ret == "" {
+		fmt.Println(err)
+	}
+
+	rets := strings.Split(ret, ",")
+
+	if rets[1] == "true" {
+
+		tags := strings.Split(rets[2], ":")
+
+		for i, tag := range tags {
+			data, err := base64.StdEncoding.DecodeString(tag)
+			if err != nil {
+				fmt.Println(err)
+			}
+			tags[i] = string(data)
+		}
+
+		return tags, err
+	} else {
+		return nil, nil
 	}
 }

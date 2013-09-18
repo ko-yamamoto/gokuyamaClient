@@ -56,11 +56,28 @@ func TestSetValueWithTag(t *testing.T) {
 
 }
 
+func TestGetKeysByTag(t *testing.T) {
+
+	gc.SetValueWithTag("ccc", "ddd", "testtag")
+
+	ret, _ := gc.GetKeysByTag("testtag")
+	if ret == nil {
+		t.Errorf("GetKeysByTag result %s, want [aaa ccc]", ret)
+	}
+
+	expected := []string{"aaa", "ccc"}
+	for i, tag := range ret {
+		if tag != expected[i] {
+			t.Errorf("GetKeysByTag result %s, want %s", tag, expected[i])
+		}
+	}
+
+}
+
 func TestClose(t *testing.T) {
 
 	err := gc.Close()
 	if err != nil {
 		t.Error(err)
 	}
-
 }
