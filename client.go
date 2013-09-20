@@ -1,6 +1,6 @@
 // Package client provides GokuyamaClient for connecting to okuyama servers,
 // setting key-value and getting value.
-package client
+package main
 
 import (
 	"bufio"
