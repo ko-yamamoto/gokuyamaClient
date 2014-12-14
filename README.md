@@ -1,4 +1,4 @@
-go-okuyama-client
+gokuyamaClient
 =================
 
-experiment
+experimental go client for okuyama
